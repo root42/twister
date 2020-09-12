@@ -52,22 +52,22 @@ void draw_twist( word x0, word y0, word w, word h, word t )
 
   for( y = y0; y < y0 + h; ++y ) {
     a  = SIN4096[(t * 16 + y * 2 + 1024) % 4096] * w >> 2;
-    x1 = SIN4096[(a +    0) % 4096] >> 2;
-    x2 = SIN4096[(a + 1024) % 4096] >> 2;
-    x3 = SIN4096[(a + 2048) % 4096] >> 2;
-    x4 = SIN4096[(a + 3072) % 4096] >> 2;
     xm = x0 + (SIN4096[(t * 16 + y * 8 + 1024) % 4096] >> 3);
+    x1 = xm + (SIN4096[(a +    0) % 4096] >> 2);
+    x2 = xm + (SIN4096[(a + 1024) % 4096] >> 2);
+    x3 = xm + (SIN4096[(a + 2048) % 4096] >> 2);
+    x4 = xm + (SIN4096[(a + 3072) % 4096] >> 2);
     if(x1 < x2) {
-      hline( (xm + x1), (xm + x2), y, 33);
+      hline( x1, x2, y, 33);
     }
     if(x2 < x3) {
-      hline( (xm + x2), (xm + x3), y, 49);
+      hline( x2, x3, y, 49);
     }
     if(x3 < x4) {
-      hline( (xm + x3), (xm + x4), y, 65);
+      hline( x3, x4, y, 65);
     }
     if(x4 < x1) {
-      hline( (xm + x4), (xm + x1), y, 81);
+      hline( x4, x1, y, 81);
     }
   }
 }

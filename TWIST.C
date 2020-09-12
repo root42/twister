@@ -51,8 +51,8 @@ void draw_twist( word x0, word y0, word w, word h, word t )
   word y, x1, x2, x3, x4, xm;
 
   for( y = y0; y < y0 + h; ++y ) {
-    a  = SIN4096[(t * 16 + y * 2 + 1024) % 4096] * w >> 2;
-    xm = x0 + (SIN4096[(t * 16 + y * 8 + 1024) % 4096] >> 3);
+    a  =       SIN4096[(t * 16 + y * 2) % 4096] * (w >> 2);
+    xm = x0 + (SIN4096[(t * 16 + y * 8) % 4096] >> 3);
     x1 = xm + (SIN4096[(a +    0) % 4096] >> 2);
     x2 = xm + (SIN4096[(a + 1024) % 4096] >> 2);
     x3 = xm + (SIN4096[(a + 2048) % 4096] >> 2);

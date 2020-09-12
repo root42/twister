@@ -11,20 +11,13 @@
 #include "vga.h"
 #include "pal.h"
 
-#undef USE_MODEY
-
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 200
 
-byte far *framebuf[4];
+byte far *framebuf;
 
-#ifdef USE_MODEY
-#define SETPIX(x,y,c) *(framebuf[(x) % 4]+((dword)SCREEN_WIDTH * (y) >> 2) + ((x) >> 2)) = c
-#define GETPIX(x,y) *(framebuf[(x) % 4]+((dword)SCREEN_WIDTH * (y) >> 2) + ((x) >> 2))
-#else
-#define SETPIX(x,y,c) *(framebuf[0] + (dword)SCREEN_WIDTH * (y) + (x)) = c
-#define GETPIX(x,y) *(framebuf[0] + (dword)SCREEN_WIDTH * (y) + (x))
-#endif
+#define SETPIX(x,y,c) *(framebuf + (dword)SCREEN_WIDTH * (y) + (x)) = c
+#define GETPIX(x,y) *(framebuf + (dword)SCREEN_WIDTH * (y) + (x))
 
 #ifndef M_PI
 #define M_PI 3.14159
@@ -93,49 +86,21 @@ int main()
   frame = random(1024);
   init_sin();
 
-#ifdef USE_MODEY
-  set_mode_y();
-  front = vga_page[0];
-  back  = vga_page[1];
-#else
   set_graphics_mode();
-#endif
-
   set_palette( fire_pal );
-#ifdef USE_MODEY
-  for( i = 0; i < 4; ++i ) {
-    framebuf[i] = malloc( SCREEN_WIDTH*SCREEN_HEIGHT );
-    if( framebuf[i] == NULL ) {
-      printf("not enough memory\n");
-      return 1;
-    }
-    memset( framebuf[i], 0x00, SCREEN_WIDTH*SCREEN_HEIGHT );
-  }
-#else
-  framebuf[0] = malloc( SCREEN_WIDTH*SCREEN_HEIGHT );
-  if( framebuf[0] == NULL ) {
+  framebuf = malloc( SCREEN_WIDTH*SCREEN_HEIGHT );
+  if( framebuf == NULL ) {
     printf("not enough memory\n");
     return 1;
   }
-  memset( framebuf[0], 0x00, SCREEN_WIDTH*SCREEN_HEIGHT );
-#endif
+  memset( framebuf, 0x00, SCREEN_WIDTH*SCREEN_HEIGHT );
 
   while(!kbhit())
   {
-#ifdef USE_MODEY
-    for(i = 0; i < 4; ++i) {
-      memset( framebuf[i], 0x00, SCREEN_WIDTH*SCREEN_HEIGHT );
-    }
-    draw_twist( 100, 0, 128, 200, frame );
-    blit2page( framebuf, back, 100, 0, 128, 200);
-    wait_for_retrace();
-    page_flip( &front, &back );
-#else
-    memset( framebuf[0], 0x00, SCREEN_WIDTH*SCREEN_HEIGHT );
+    memset( framebuf, 0x00, SCREEN_WIDTH*SCREEN_HEIGHT );
     draw_twist( 100, 0, 128, 200, frame );
     wait_for_retrace();
-    memcpy( VGA, framebuf[0], SCREEN_WIDTH*SCREEN_HEIGHT );
-#endif
+    memcpy( VGA, framebuf, SCREEN_WIDTH*SCREEN_HEIGHT );
     frame++;
   }
   getch();

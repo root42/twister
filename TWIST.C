@@ -23,15 +23,11 @@ byte far *framebuf;
 #define M_PI 3.14159
 #endif
 
-unsigned char SIN256[256];
 unsigned char SIN4096[4096];
 
 void init_sin()
 {
   int i;
-  for( i = 0; i < 256; ++i ) {
-    SIN256[ i ] = 255 * ( (sin( 2.0 * M_PI * i / 255.0 ) + 1.0 ) / 2.0 );
-  }
   for( i = 0; i < 4096; ++i ) {
     SIN4096[ i ] = 255 * ( (sin( 2.0 * M_PI * i / 4095.0 ) + 1.0 ) / 2.0 );
   }
